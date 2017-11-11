@@ -13,17 +13,16 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name="Pentacore TeleOp")
 public class PentacoreCompetitionBot extends LinearOpMode
 {
-    private DcMotor motorRight;
-    private DcMotor motorLeft;
-    private DcMotor motorArm;
+    private DcMotor motorRight; //Declare Right Motor
+    private DcMotor motorLeft; //Declare Left Motor
+    private DcMotor motorArm; //Declare Arm's Motor
 
-    private Servo rightServo;
-    private Servo leftServo;
+    private Servo rightServo; //Declare Right Servo
+    private Servo leftServo; //Declare Left Servo
 
     @Override
-    public void runOpMode() throws InterruptedException
-    {
-        motorRight = hardwareMap.dcMotor.get("motorRight");
+    public void runOpMode() throws InterruptedException {
+        motorRight = hardwareMap.dcMotor.get("motorRight"); //test
         motorLeft = hardwareMap.dcMotor.get("motorLeft");
         motorArm = hardwareMap.dcMotor.get("motorArm");
 
@@ -32,47 +31,68 @@ public class PentacoreCompetitionBot extends LinearOpMode
         leftServo = hardwareMap.servo.get("leftServo");
         rightServo = hardwareMap.servo.get("rightServo");
 
-        rightServo.scaleRange(0.6,1.0);
-        leftServo.scaleRange(0.0,0.4);
+        rightServo.scaleRange(0.6, 1.0);
+        leftServo.scaleRange(0.0, 0.4);
 
         waitForStart();
 
-        while (opModeIsActive())
-        {
+        while (opModeIsActive()) {
             float arm;
+            float right;
+            float left;
 
             arm = -gamepad2.left_stick_y;
+            right = -gamepad1.right_stick_y;
+            left = -gamepad1.left_stick_y;
 
             arm = Range.clip(arm, -1, 1);
+            right = Range.clip(right, -1, 1);
+            left = Range.clip(left, -1, 1);
 
-            arm = (float)scaleInput(arm);
+            arm = (float) scaleInput(arm);
+            right = (float) scaleInput(right);
+            left = (float) scaleInput(left);
 
-
-            motorLeft.setPower(-gamepad1.left_stick_y);
-            motorRight.setPower(-gamepad1.right_stick_y);
-
-            if(gamepad2.left_trigger > 0.25)
-            {
-                arm/=3;
+            if (gamepad1.left_trigger > 0.25) {
+                left /= 3;
             }
+
+            motorLeft.setPower(left);
+
+            if (gamepad1.right_trigger > 0.25) {
+                right /= 3;
+            }
+
+            motorRight.setPower(right);
+
+            if (gamepad2.left_trigger > 0.25) {
+                arm /= 3;
+            }
+
             motorArm.setPower(arm);
 
+
+        if (gamepad2.a) {
+            telemetry.log().add("Test1", "Test1");
+            rightServo.setPosition(Servo.MAX_POSITION);
+            leftServo.setPosition(Servo.MIN_POSITION);
         }
-            if(gamepad2.a)
-            {
-                telemetry.log().add("Test1", "Test1");
-                rightServo.setPosition(Servo.MIN_POSITION);
-                leftServo.setPosition(Servo.MIN_POSITION);
-            }
-            if (gamepad2.b)
-            {
-                telemetry.log().add("Test2", "Test2");
-                rightServo.setPosition(Servo.MAX_POSITION);
-                leftServo.setPosition(Servo.MAX_POSITION);
-            }
+        if (gamepad2.b) {
+            telemetry.log().add("Test2", "Test2");
+            rightServo.setPosition(Servo.MIN_POSITION);
+            leftServo.setPosition(Servo.MAX_POSITION);
+        }
+        /*if (gamepad2.x) {
+            telemetry.log().add("Test1", "Test1");
 
-            idle();
+        }
+        if (gamepad2.y) {
+            telemetry.log().add("Test2", "Test2");
 
+        }*/
+
+        idle();
+    }
 
     }
     double scaleInput(double dVal) {
